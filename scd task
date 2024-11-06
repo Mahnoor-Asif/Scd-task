@@ -1,0 +1,117 @@
+// Online C++ compiler to run C++ program
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Task {
+private:
+    int id;
+    std::string title;
+    std::string description;
+    bool isCompleted;
+
+public:
+    Task(int id, std::string title, std::string description) 
+        : id(id), title(title), description(description), isCompleted(false) {}
+
+    // Getters
+    int getId() const { return id; }
+    std::string getTitle() const { return title; }
+    std::string getDescription() const { return description; }
+    bool getIsCompleted() const { return isCompleted; }
+
+    // Setters
+    void setTitle(const std::string& title) { this->title = title; }
+    void setDescription(const std::string& description) { this->description = description; }
+    void setIsCompleted(bool isCompleted) { this->isCompleted = isCompleted; }
+
+    void display() const {
+        std::cout << "ID: " << id << ", Title: " << title 
+                  << ", Description: " << description 
+                  << ", Completed: " << (isCompleted ? "Yes" : "No") << "\n";
+    }
+};
+
+class TaskView {
+public:
+    void showTasks(const std::vector<Task>& tasks) const {
+        if (tasks.empty()) {
+            std::cout << "No tasks available.\n";
+        } else {
+            for (const auto& task : tasks) {
+                task.display();
+            }
+        }
+    }
+
+    void showTaskAdded(const Task& task) const {
+        std::cout << "Task added:\n";
+        task.display();
+    }
+
+    void showTaskCompleted(const Task& task) const {
+        std::cout << "Task marked as completed:\n";
+        task.display();
+    }
+};
+
+class TaskController {
+    std::vector<Task> tasks;
+    TaskView view;
+    int taskIdCounter = 1;
+
+public:
+    void addTask(const std::string& title, const std::string& description) {
+        Task newTask(taskIdCounter++, title, description);
+        tasks.push_back(newTask);
+        view.showTaskAdded(newTask);
+    }
+
+    void displayTasks() const {
+        view.showTasks(tasks);
+    }
+
+    void markTaskCompleted(int id) {
+        for (auto& task : tasks) {
+            if (task.getId() == id) {
+                task.setIsCompleted(true);
+                view.showTaskCompleted(task);
+                return;
+            }
+        }
+        std::cout << "Task not found.\n";
+    }
+};
+
+int main() {
+    TaskController controller;
+    int choice;
+
+    while (true) {
+        std::cout << "\n1. Add Task\n2. Display Tasks\n3. Mark Task as Completed\n4. Exit\nChoose an option: ";
+        std::cin >> choice;
+        std::cin.ignore();
+
+        if (choice == 1) {
+            std::string title, description;
+            std::cout << "Enter task title: ";
+            std::getline(std::cin, title);
+            std::cout << "Enter task description: ";
+            std::getline(std::cin, description);
+            controller.addTask(title, description);
+        } else if (choice == 2) {
+            controller.displayTasks();
+        } else if (choice == 3) {
+            int id;
+            std::cout << "Enter task ID to mark as completed: ";
+            std::cin >> id;
+            controller.markTaskCompleted(id);
+        } else if (choice == 4) {
+            break;
+        } else {
+            std::cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    return 0;
+}
